@@ -6,7 +6,15 @@
 /*   By: amezoe <amezoe@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 22:40:04 by amezoe            #+#    #+#             */
-/*   Updated: 2024/12/13 22:40:05 by amezoe           ###   ########.fr       */
+/*   Updated: 2024/12/13 23:35:07 by amezoe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "get_next_line.h"
+
+
+
+char *get_next_line(int fd)
+{
+	
+}
