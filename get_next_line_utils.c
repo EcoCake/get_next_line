@@ -3,30 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amezoe <amezoe@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alicia <alicia@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 22:39:59 by amezoe            #+#    #+#             */
-/*   Updated: 2024/12/13 23:41:45 by amezoe           ###   ########.fr       */
+/*   Updated: 2024/12/18 04:02:26 by alicia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(char *s, int c)
 {
-	unsigned char	ch;
+	int	i;
 
-	ch = (unsigned char)c;
-	while (*s)
-	{
-		if ((unsigned char)*s == ch)
-			return ((char *)s);
-		s++;
-	}
-	if (ch == '\0')
-		return ((char *)s);
+	if (s == NULL)
+		return (NULL);
+	i = 0;
+	while (s[i] && s[i] != (char)c)
+		i++;
+	if (s[i] == (char)c)
+		return (&s[i]);
 	return (NULL);
 }
+
 size_t	ft_strlen(const char *s)
 {
 	size_t	i;
@@ -36,21 +35,31 @@ size_t	ft_strlen(const char *s)
 		i++;
 	return (i);
 }
-char	*ft_strjoin(char const *s1, char const *s2)
+
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*str;
 	size_t	len;
+	size_t	j;
 
-	if (!s1 || !s2)
-		return (NULL);
-	len = ft_strlen(s1) + ft_strlen(s2);
-	str = (char *)malloc(sizeof(char) * (len + 1));
-	if (str != NULL)
+	if (s1 == NULL)
 	{
-		ft_strlcpy(str, s1, len + 1);
-		ft_strlcat(str, s2, len +1);
+		s1 = (char *)malloc(1 * sizeof(char));
+		s1[0] = '\0';
 	}
+	len = ft_strlen(s1) + ft_strlen(s2);
+	str = (char *)malloc(len + 1 * sizeof(char));
+	if (str == NULL)
+		return (NULL);
+	len = -1;
+	while (s1[++len])
+		str[len] = s1[len];
+	j = 0;
+	while (s2[j])
+	{
+		str[len++] = s2[j++];
+	}
+	str[len] = '\0';
+	free(s1);
 	return (str);
 }
-
-//hafta free manually when its called, this is stupid but im lazy to rewrite it 

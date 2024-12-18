@@ -6,7 +6,7 @@
 /*   By: alicia <alicia@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 22:40:04 by amezoe            #+#    #+#             */
-/*   Updated: 2024/12/18 00:48:58 by alicia           ###   ########.fr       */
+/*   Updated: 2024/12/18 04:02:03 by alicia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,20 @@ char	*ft_read(char *s, int fd)
 		return (NULL);
 	n = 1;
 	while (ft_strchr(s, '\n') == NULL && n != 0)
+	{
+		n = read(fd, buffer, BUFFER_SIZE);
+		if (n == -1)
 		{
-			n = read(fd, buffer, BUFFER_SIZE);
-			if (n == -1)
-			{
-				free(buffer);
-				return (NULL);
-			}
-			buffer[n] = '\0';
-			s = ft_strjoin(s, buffer);
+			free(buffer);
+			return (NULL);
 		}
-		free (buffer);
-		return (s);
+		buffer[n] = '\0';
+		s = ft_strjoin(s, buffer);
+	}
+	free (buffer);
+	return (s);
 }
+
 char	*ft_changing_static(char *s)
 {
 	char	*newstring;
@@ -62,6 +63,7 @@ char	*ft_changing_static(char *s)
 	free (s);
 	return (newstring);
 }
+
 char	*ft_get_line(char *result)
 {
 	char	*line;
@@ -88,7 +90,7 @@ char	*ft_get_line(char *result)
 	return (line);
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
 	static char	*s;
 	char		*buffer;
