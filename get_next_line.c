@@ -6,62 +6,66 @@
 /*   By: alicia <alicia@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 22:40:04 by amezoe            #+#    #+#             */
-/*   Updated: 2024/12/18 04:02:03 by alicia           ###   ########.fr       */
+/*   Updated: 2024/12/19 02:17:31 by alicia           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_read(char *s, int fd)
+char	*read_and_update_static(char *s, int fd, char *buffer)
 {
-	char	*buffer;
-	int		n;
+	int	n;
 
-	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (NULL);
 	n = 1;
 	while (ft_strchr(s, '\n') == NULL && n != 0)
 	{
 		n = read(fd, buffer, BUFFER_SIZE);
 		if (n == -1)
 		{
-			free(buffer);
+			free(s);
 			return (NULL);
 		}
 		buffer[n] = '\0';
 		s = ft_strjoin(s, buffer);
+		if (!s)
+			return (NULL);
 	}
-	free (buffer);
+	return (s);
+}
+
+char	*ft_read(char *s, int fd)
+{
+	char	*buffer;
+
+	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
+	s = read_and_update_static(s, fd, buffer);
+	free(buffer);
 	return (s);
 }
 
 char	*ft_changing_static(char *s)
 {
 	char	*newstring;
-	size_t	i;
 	size_t	j;
+	size_t	i;
 
+	if (!s || !*s)
+		return (free(s), NULL);
 	j = 0;
-	while (s[j] != '\n' && s[j] != '\0')
+	while (s[j] && s[j] != '\n')
 		j++;
-	if (s[j] == '\0')
-	{
-		free (s);
-		return (NULL);
-	}
-	newstring = (char *)malloc((ft_strlen(s) - j + 1) * sizeof(char));
-	if (newstring == NULL)
-		return (NULL);
+	if (!s[j])
+		return (free(s), NULL);
+	newstring = (char *)malloc((ft_strlen(s) - j) * sizeof(char));
+	if (!newstring)
+		return (free(s), NULL);
 	i = 0;
-	while (s[j++])
-	{
-		newstring[i] = s[j];
-		i++;
-	}
+	while (s[++j])
+		newstring[i++] = s[j];
 	newstring[i] = '\0';
-	free (s);
-	return (newstring);
+	return (free(s), newstring);
 }
 
 char	*ft_get_line(char *result)
@@ -99,8 +103,28 @@ char	*get_next_line(int fd)
 		return (NULL);
 	s = ft_read(s, fd);
 	if (s == NULL)
+	{
+		free (s);
 		return (NULL);
+	}
 	buffer = ft_get_line(s);
 	s = ft_changing_static(s);
 	return (buffer);
 }
+
+// int main(void)
+// {
+// 	int fd;
+// 	char *next_line;
+// 	int count;
+// 	fd = open("test.txt", O_RDONLY);
+// 	count = 0;
+// 	while ((next_line = get_next_line(fd)))
+// 	{
+// 		count++;
+// 		printf("[%d]:%s", count, next_line);
+// 		free(next_line);
+// 	}
+// 	close(fd);
+// 	return (0);
+// }
