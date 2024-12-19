@@ -1,49 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amezoe <amezoe@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/13 22:40:04 by amezoe            #+#    #+#             */
-/*   Updated: 2024/12/19 08:13:27 by amezoe           ###   ########.fr       */
+/*   Created: 2024/12/19 07:59:36 by alicia            #+#    #+#             */
+/*   Updated: 2024/12/19 08:13:50 by amezoe           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-char	*read_and_update_static(char *s, int fd, char *buffer)
-{
-	int	n;
-
-	n = 1;
-	while (ft_strchr(s, '\n') == NULL && n != 0)
-	{
-		n = read(fd, buffer, BUFFER_SIZE);
-		if (n == -1)
-		{
-			free(s);
-			return (NULL);
-		}
-		buffer[n] = '\0';
-		s = ft_strjoin(s, buffer);
-		if (!s)
-			return (NULL);
-	}
-	return (s);
-}
-
-char	*ft_read(char *s, int fd)
-{
-	char	*buffer;
-
-	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (NULL);
-	s = read_and_update_static(s, fd, buffer);
-	free(buffer);
-	return (s);
-}
+#include "get_next_line_bonus.h"
 
 char	*ft_changing_static(char *s)
 {
@@ -94,37 +61,50 @@ char	*ft_get_line(char *result)
 	return (line);
 }
 
+char	*read_and_update_static(char *s, int fd, char *buffer)
+{
+	int	n;
+
+	n = 1;
+	while (ft_strchr(s, '\n') == NULL && n != 0)
+	{
+		n = read(fd, buffer, BUFFER_SIZE);
+		if (n == -1)
+		{
+			free(s);
+			return (NULL);
+		}
+		buffer[n] = '\0';
+		s = ft_strjoin(s, buffer);
+		if (!s)
+			return (NULL);
+	}
+	return (s);
+}
+
+char	*ft_read(char *s, int fd)
+{
+	char	*buffer;
+
+	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
+	s = read_and_update_static(s, fd, buffer);
+	free(buffer);
+	return (s);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	*s;
-	char		*buffer;
+	char		*line;
+	static char	*res[10240];
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	s = ft_read(s, fd);
-	if (s == NULL)
-	{
-		free (s);
+	res[fd] = ft_read(res[fd], fd);
+	if (res[fd] == NULL)
 		return (NULL);
-	}
-	buffer = ft_get_line(s);
-	s = ft_changing_static(s);
-	return (buffer);
+	line = ft_get_line(res[fd]);
+	res[fd] = ft_changing_static(res[fd]);
+	return (line);
 }
-
-// int main(void)
-// {
-// 	int fd;
-// 	char *next_line;
-// 	int count;
-// 	fd = open("test.txt", O_RDONLY);
-// 	count = 0;
-// 	while ((next_line = get_next_line(fd)))
-// 	{
-// 		count++;
-// 		printf("[%d]:%s", count, next_line);
-// 		free(next_line);
-// 	}
-// 	close(fd);
-// 	return (0);
-// }
